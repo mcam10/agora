@@ -11,6 +11,7 @@ SERIES = {
     "DGS10": "10-Year Treasury Yield",
     "T10Y2Y": "10Y-2Y Yield Curve",
     "FEDFUNDS": "Federal Funds Rate",
+    "VIXCLS": "CBOE Volatility Index",
 }
 
 
