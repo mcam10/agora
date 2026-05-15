@@ -2,6 +2,7 @@ import os
 import requests
 import pandas as pd
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -26,7 +27,10 @@ def fetch_series(series_id: str, lookback_days: int = 90) -> pd.DataFrame:
         "file_type": "json",
         "sort_order": "desc",
         "limit": lookback_days,
-    }
+        "observation_start": (
+        datetime.today() - timedelta(days=lookback_days)
+    ).strftime("%Y-%m-%d"),
+}
 
     resp = requests.get(FRED_BASE_URL, params=params, timeout=10)
     resp.raise_for_status()

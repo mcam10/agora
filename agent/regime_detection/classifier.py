@@ -7,6 +7,8 @@ VIX_HIGH_THRESHOLD = 25.0
 
 def classify_regime(data: dict[str, pd.DataFrame]) -> dict:
     dgs10 = data["DGS10"]
+    if dgs10.empty:
+        raise ValueError("DGS10 data missing - cannot classify regime")
     t10y2y = data["T10Y2Y"]
     vix = data["VIXCLS"]
 
