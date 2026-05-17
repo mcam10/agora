@@ -18,6 +18,19 @@ def main():
     vix_str = f"{result['vix_current']:.2f}" if result['vix_current'] else "N/A"
     print(f"  VIX:    {vix_str}     | high_volatility={signals['high_volatility']}")
 
+## 10 year treasury yield wondering if we can compare this historically... maybe we can.. 
+## For now we are doing a basic scoring
+    if result['dgs10_current'] > 3.8:
+        print("This is high by historical standards")
+
+# yield curve this will actually need to pull historic data to compare
+    if result['t10y2y_current'] > 0.4:
+        print("Curve is flattening")
+
+# FEDFUNDS this will actually need to pull historic data to compare
+    if result['fedfunds_current'] > 3.5:
+        print("Curve is flattening")
+
     if result["regime"] == "risk-off":
         print("\n→ RISK-OFF: Recommending USYC allocation")
     else:
