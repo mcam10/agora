@@ -91,9 +91,10 @@ The agent reads three primary macro signals from FRED:
 | Federal Funds Rate | FEDFUNDS | Rate environment context |
 
 **Risk-off conditions** (any of the following):
+- DGS10 > 4.5% absolute level (historically restrictive)
 - DGS10 rising > 50bps over 30 days
 - Yield curve inverted (T10Y2Y < 0)
-- High volatility regime detected
+- VIX > 25
 
 When risk-off: capital allocation shifts to USYC (tokenized money market fund via Circle).
 When risk-on: opportunity scanner activates across 151 strategies.
@@ -111,13 +112,14 @@ cp .env.example .env
 python -m agent.regime_detection.run
 ```
 
-### Arc Testnet Setup
+### Arc Testnet Deploy
 ```bash
-cd registry
-npm install
-npx hardhat compile
-npx hardhat test
-npx hardhat run scripts/deploy.js --network arc-testnet
+cd bingi-arc
+source .env
+forge create src/AgentRegistry.sol:AgentRegistry \
+  --rpc-url $ARC_TESTNET_RPC_URL \
+  --private-key $PRIVATE_KEY \
+  --broadcast
 ```
 
 ---
