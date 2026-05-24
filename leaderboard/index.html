@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agora — Agent Leaderboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
+            background: #0a0a0f;
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container { max-width: 720px; margin: 0 auto; }
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        .subtitle {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .regime-banner {
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid;
+        }
+        .regime-banner.risk-off {
+            background: rgba(255, 59, 48, 0.08);
+            border-color: rgba(255, 59, 48, 0.3);
+        }
+        .regime-banner.risk-on {
+            background: rgba(48, 209, 88, 0.08);
+            border-color: rgba(48, 209, 88, 0.3);
+        }
+        .regime-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 0.5rem;
+        }
+        .regime-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .regime-value.off { color: #ff3b30; }
+        .regime-value.on { color: #30d158; }
+
+        .card {
+            background: #111118;
+            border: 1px solid #1e1e2e;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        .card-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #666;
+            margin-bottom: 0.75rem;
+        }
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #1a1a2a;
+        }
+        .row:last-child { border-bottom: none; }
+        .row-label { font-size: 0.75rem; color: #888; }
+        .row-value {
+            font-size: 0.75rem;
+            color: #ccc;
+            font-family: inherit;
+            word-break: break-all;
+            text-align: right;
+            max-width: 60%;
+        }
+        a { color: #6e9eff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+
+        .signals {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        .signal {
+            background: #0d0d14;
+            border: 1px solid #1e1e2e;
+            border-radius: 6px;
+            padding: 0.75rem;
+            text-align: center;
+        }
+        .signal-name {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #666;
+            margin-bottom: 0.4rem;
+        }
+        .signal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 auto 0.3rem;
+        }
+        .signal-dot.active { background: #ff3b30; box-shadow: 0 0 8px rgba(255, 59, 48, 0.5); }
+        .signal-dot.inactive { background: #333; }
+        .signal-status { font-size: 0.7rem; }
+        .signal-status.active { color: #ff3b30; }
+        .signal-status.inactive { color: #555; }
+
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.65rem;
+            color: #444;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Agora Agent Leaderboard</h1>
+        <p class="subtitle">On-chain regime signal feed · Arc Testnet</p>
+
+        <div class="regime-banner risk-off">
+            <div class="regime-label">Current Regime</div>
+            <div class="regime-value off">RISK-OFF</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Regime Signals</div>
+            <div class="signals">
+                <div class="signal">
+                    <div class="signal-dot active"></div>
+                    <div class="signal-name">Yield Spike</div>
+                    <div class="signal-status active">TRUE</div>
+                </div>
+                <div class="signal">
+                    <div class="signal-dot inactive"></div>
+                    <div class="signal-name">Curve Inverted</div>
+                    <div class="signal-status inactive">FALSE</div>
+                </div>
+                <div class="signal">
+                    <div class="signal-dot inactive"></div>
+                    <div class="signal-name">High Volatility</div>
+                    <div class="signal-status inactive">FALSE</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Agent Identity</div>
+            <div class="row">
+                <span class="row-label">Contract</span>
+                <span class="row-value">0x7B0A2E609E38D70E43729CfEcBD2030604f88da0</span>
+            </div>
+            <div class="row">
+                <span class="row-label">Agent Code</span>
+                <span class="row-value">0x41147067c38cad0a521cf4d091d3ef46b2988e27c4bb73ae2507c254c1525407</span>
+            </div>
+            <div class="row">
+                <span class="row-label">Block</span>
+                <span class="row-value">43904784</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Latest Transaction</div>
+            <div class="row">
+                <span class="row-label">Signal Tx</span>
+                <span class="row-value"><a href="https://testnet.explorer.arc.network/tx/0x3ad718955b0edccf2cd667d34018a7f2f760585503e8b7015bd7c408f807ae4a" target="_blank" rel="noopener noreferrer">0x3ad71895...f807ae4a ↗</a></span>
+            </div>
+            <div class="row">
+                <span class="row-label">Last Updated</span>
+                <span class="row-value">2026-05-24 19:25 UTC</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            Agora Agents Hackathon · Canteen × Circle × Arc · May 2026
+        </div>
+    </div>
+</body>
+</html>
