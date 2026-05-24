@@ -126,15 +126,32 @@ npx hardhat run scripts/deploy.js --network arc-testnet
 
 **Week 1 (May 11–17)**
 - [x] Arc testnet environment
-- [ ] Registry contract deployment
-- [ ] Regime detection module (clean port)
-- [ ] USYC integration for risk-off capital
+- [x] Registry contract (compiled, tested)
+- [x] Regime detection module (FRED client, classifier, portfolio volatility)
+- [x] USYC integration (allocator, Circle client, swap logic)
+- [x] Builder wrapper (decision signing, builder code payload)
 
 **Week 2 (May 18–25)**
-- [ ] Polymarket V2 builder code wrapper
+- [x] Deploy registry to Arc testnet
+- [x] Wire end-to-end: regime → on-chain signal write (Arc testnet)
 - [ ] Leaderboard UI
 - [ ] Cross-venue attribution demo
 - [ ] Submission
+
+---
+
+## Deployed Contracts (Arc Testnet)
+
+| Contract | Address |
+|---|---|
+| AgentRegistry (v2) | `0x7B0A2E609E38D70E43729CfEcBD2030604f88da0` |
+
+- **Deployer:** `0xDE7Bd3B4a29C621870ca38C24183771E5dd2992F`
+- **Deploy tx:** `0x09f163c94d68bde63e03e576d8999e50cb5009a486c4dd32c4d544e917d022b5`
+- **Agent code:** `0x41147067c38cad0a521cf4d091d3ef46b2988e27c4bb73ae2507c254c1525407`
+- **Registration tx:** `0x8e82cf6a0c85fb6ab209170b68db2eee2d1d37d8a24e796aa75805e868bde5f5`
+- **First signal tx:** `0x3ad718955b0edccf2cd667d34018a7f2f760585503e8b7015bd7c408f807ae4a`
+- **Block:** `43904784`
 
 ---
 

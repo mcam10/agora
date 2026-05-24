@@ -3,6 +3,7 @@ import sys
 
 from fred_client import fetch_all
 from classifier import classify_regime
+from on_chain import write_regime_on_chain
 
 
 def main():
@@ -18,23 +19,32 @@ def main():
     vix_str = f"{result['vix_current']:.2f}" if result['vix_current'] else "N/A"
     print(f"  VIX:    {vix_str}     | high_volatility={signals['high_volatility']}")
 
-## 10 year treasury yield wondering if we can compare this historically... maybe we can.. 
-## For now we are doing a basic scoring
     if result['dgs10_current'] > 3.8:
-        print("This is high by historical standards")
+        print("  ↑ High by historical standards")
 
-# yield curve this will actually need to pull historic data to compare
     if result['t10y2y_current'] > 0.4:
-        print("Curve is flattening")
+        print("  ↑ Curve is flattening")
 
-# FEDFUNDS this will actually need to pull historic data to compare
-    if result['fedfunds_current'] > 3.5:
-        print("Curve is flattening")
+    if result['fedfunds_current'] and result['fedfunds_current'] > 3.5:
+        print("  ↑ Fed funds elevated")
 
     if result["regime"] == "risk-off":
         print("\n→ RISK-OFF: Recommending USYC allocation")
     else:
         print("\n→ RISK-ON: Opportunity scanner active")
+
+    print("\nWriting regime signal on-chain (Arc testnet)...")
+    try:
+        chain_result = write_regime_on_chain(result)
+        if chain_result["registered"]:
+            print(f"  ✓ registered | tx: {chain_result['reg_tx']}")
+        else:
+            print(f"  ✓ {chain_result['reg_tx']}")
+        print(f"  ✓ signal written | tx: {chain_result['signal_tx']}")
+        print(f"  ✓ agent_code: {chain_result['agent_code']}")
+        print(f"  ✓ block: {chain_result['block']} | status: {chain_result['status']}")
+    except Exception as e:
+        print(f"  ✗ On-chain write failed: {e}")
 
     return result
 

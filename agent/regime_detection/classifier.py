@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 YIELD_SPIKE_THRESHOLD_BPS = 50
+YIELD_ABSOLUTE_THRESHOLD = 4.5
 LOOKBACK_DAYS = 30
 VIX_HIGH_THRESHOLD = 25.0
 
@@ -36,10 +37,11 @@ def classify_regime(data: dict[str, pd.DataFrame]) -> dict:
 def _detect_yield_spike(dgs10: pd.DataFrame) -> bool:
     if len(dgs10) < LOOKBACK_DAYS:
         return False
-
     recent = dgs10.tail(LOOKBACK_DAYS)
     change_bps = (recent["value"].iloc[-1] - recent["value"].iloc[0]) * 100
-    return change_bps > YIELD_SPIKE_THRESHOLD_BPS
+    spike = change_bps > YIELD_SPIKE_THRESHOLD_BPS
+    elevated = float(dgs10["value"].iloc[-1]) > YIELD_ABSOLUTE_THRESHOLD
+    return spike or elevated
 
 
 def _detect_inversion(t10y2y: pd.DataFrame) -> bool:

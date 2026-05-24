@@ -12,12 +12,14 @@ contract AgentRegistry {
 
     mapping(bytes32 => Agent) public agents;
     mapping(address => bytes32) public ownerToCode;
+    mapping(bytes32 => string) public regimeSignals;
 
     uint256 public agentCount;
 
     event AgentRegistered(bytes32 indexed code, address indexed owner, string metadata);
     event AgentDeactivated(bytes32 indexed code);
     event AgentMetadataUpdated(bytes32 indexed code, string newMetadata);
+    event RegimeSignalUpdated(bytes32 indexed code, string signal);
 
     error AlreadyRegistered();
     error NotOwner();
@@ -65,5 +67,17 @@ contract AgentRegistry {
 
     function isActive(bytes32 code) external view returns (bool) {
         return agents[code].active;
+    }
+
+    function writeRegimeSignal(string calldata signal) external {
+        bytes32 code = ownerToCode[msg.sender];
+        if (code == bytes32(0)) revert AgentNotFound();
+
+        regimeSignals[code] = signal;
+        emit RegimeSignalUpdated(code, signal);
+    }
+
+    function getRegimeSignal(bytes32 code) external view returns (string memory) {
+        return regimeSignals[code];
     }
 }
