@@ -28,9 +28,9 @@ def fetch_series(series_id: str, lookback_days: int = 90) -> pd.DataFrame:
         "sort_order": "desc",
         "limit": lookback_days,
         "observation_start": (
-        datetime.today() - timedelta(days=lookback_days)
-    ).strftime("%Y-%m-%d"),
-}
+            datetime.today() - timedelta(days=lookback_days)
+        ).strftime("%Y-%m-%d"),
+    }
 
     resp = requests.get(FRED_BASE_URL, params=params, timeout=10)
     resp.raise_for_status()

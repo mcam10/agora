@@ -3,7 +3,7 @@ import json
 from web3 import Web3
 from dotenv import load_dotenv
 
-load_dotenv(os.path.join(os.path.dirname(__file__), '../../bingi-arc/.env'))
+load_dotenv()
 
 REGISTRY_ADDRESS = "0x7B0A2E609E38D70E43729CfEcBD2030604f88da0"
 
