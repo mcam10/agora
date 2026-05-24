@@ -114,9 +114,7 @@ python -m agent.regime_detection.run
 
 ### Arc Testnet Deploy
 ```bash
-cd bingi-arc
-source .env
-forge create src/AgentRegistry.sol:AgentRegistry \
+forge create registry/contracts/AgentRegistry.sol:AgentRegistry \
   --rpc-url $ARC_TESTNET_RPC_URL \
   --private-key $PRIVATE_KEY \
   --broadcast
@@ -136,9 +134,9 @@ forge create src/AgentRegistry.sol:AgentRegistry \
 **Week 2 (May 18–25)**
 - [x] Deploy registry to Arc testnet
 - [x] Wire end-to-end: regime → on-chain signal write (Arc testnet)
-- [ ] Leaderboard UI
+- [x] Leaderboard UI
 - [ ] Cross-venue attribution demo
-- [ ] Submission
+- [x] Submission
 
 ---
 
@@ -154,6 +152,7 @@ forge create src/AgentRegistry.sol:AgentRegistry \
 - **Registration tx:** `0x8e82cf6a0c85fb6ab209170b68db2eee2d1d37d8a24e796aa75805e868bde5f5`
 - **First signal tx:** `0x3ad718955b0edccf2cd667d34018a7f2f760585503e8b7015bd7c408f807ae4a`
 - **Block:** `43904784`
+- **Verify on Arc:** https://testnet.arcscan.app/address/0x7B0A2E609E38D70E43729CfEcBD2030604f88da0
 
 ---
 
