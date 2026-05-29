@@ -3,10 +3,12 @@ import scipy.stats as stats
 
 from fred_client import fetch_all
 
+DAYS=252
+
 
 def main():
     print("Fetching FRED macro data (DGS10, T10Y2Y, FEDFUNDS, VIXCLS)...")
-    data = fetch_all(lookback_days=90)
+    data = fetch_all(lookback_days=DAYS)
 
     # --- DGS10: Percentile scoring (88th pct as of 2026-05-29) ---
     dgs_10_data = data.get("DGS10", "No DGS10 data found")
@@ -21,7 +23,7 @@ def main():
     plt.axvline(t102y_data['value'].iloc[-1], color='red', linestyle='--', label='Current Value')
     plt.xlabel('T10Y2Y Value')
     plt.ylabel('Frequency')
-    plt.title('Distribution of T10Y2Y Values (Past 90 days)')
+    plt.title(f"'Distribution of T10Y2Y Values (Past {DAYS} days)'")
     plt.legend()
     plt.show()
     t102y_current_value = t102y_data['value'].iloc[-1]
