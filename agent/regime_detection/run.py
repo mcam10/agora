@@ -1,14 +1,27 @@
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 
+import pandas as pd
+
 from fred_client import fetch_all
 
 DAYS=252
 
 
 
+def compute_correlations(data, signals):
+    combined = pd.DataFrame({
+        key: data[key].set_index("date")["value"]
+        for key in signals
+        if data.get(key) is not None
+        }).dropna()
+
+    corr = combined.corr()
+    print("\nSignal Correlation Matrix:")
+    print(corr.round(2).to_string())
+    return corr
+
 def compute_signal(data, key, label):
-    
     df = data.get(key)
     if df is None:
         print(f"No {label} data found")
@@ -22,7 +35,7 @@ def compute_signal(data, key, label):
     zscore = (current - mean) / std
 
     print(f"Current {label} value: {current:.2f}")
-    print(f"Percentile {percentile} {percentile:.2f}%")
+    print(f"Percentile {percentile:.2f}%")
     print(f"Z-Score {zscore:+.4f}\n")
 
     return {
@@ -44,6 +57,7 @@ def main():
         "FEDFUNDS": compute_signal(data, "FEDFUNDS", "Fed Funds Rate"),
         "VIXCLS": compute_signal(data, "VIXCLS", "VIX"),
    }
+    corr = compute_correlations(data, signals) 
 
     # TODO Phase 3: Re-enable classifier with weighted composite score
 
