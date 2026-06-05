@@ -4,7 +4,7 @@ A running record of analytical decisions, findings, and next steps as this proje
 
 ---
 
-## Phase 1 — Percentile-Based Signal Scoring (Current)
+## Phase 1 — Percentile-Based Signal Scoring (Complete)
 
 ### What We Built
 Replaced hardcoded thresholds (e.g. `vix < 15 → score 2`) with rolling percentile scoring using `scipy.stats.percentileofscore`. Each signal is now ranked within its own historical distribution, making the detector self-calibrating as macro conditions shift.
@@ -44,7 +44,7 @@ SP500 above 200MA and VIX below 20 are highly correlated — they tend to agree 
 
 ---
 
-## Phase 2 — Z-Score Normalization + Correlation Matrix (Next)
+## Phase 2 — Z-Score Normalization + Correlation Matrix (Complete)
 
 ### Goals
 - Add Z-score computation alongside percentiles: `z = (current - mean) / std`
@@ -65,7 +65,7 @@ Compute percentile + z-score + mean + std for every series in a single pass. Out
 
 ---
 
-## Phase 3 — Composite Regime Score (Planned)
+## Phase 3 — Composite Regime Score (Complete)
 
 ### Goals
 - Replace static RISK_ON / NEUTRAL / RISK_OFF / CRISIS thresholds with a weighted Z-score composite
@@ -87,7 +87,7 @@ These boundaries will be validated against historical data in the backtesting ph
 
 ---
 
-## Phase 4 — Backtesting (Planned)
+## Phase 4 — Backtesting (Current)
 
 ### Goals
 - Pull 5 years of FRED history
@@ -132,3 +132,5 @@ These boundaries will be validated against historical data in the backtesting ph
 ## Session Log
 
 **2026-05-29** — First session. Built FRED data pipeline, implemented percentile scoring for DGS10 and T10Y2Y, identified 90-day window limitation, documented signal findings. Commented out classifier pending percentile-first rebuild. Identified open source / private split strategy.
+
+**2026-06-05** — Cleanup session. Removed verbose inline comments and dead code from `run.py`. Stripped unused imports (`json`, `sys`, `fetch_series`, `classify_regime`, `on_chain`). Removed commented-out DGS10 histogram plot and the entire commented-out classifier/on-chain block. Added concise section markers and TODO breadcrumbs for Phase 2/3 resumption. Created `status_report.md` to document project progression outside of code comments.

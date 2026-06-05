@@ -95,7 +95,7 @@ def main():
     print(f"\nStress Score: {stress_score:+.4f}")
     print(f"Regime: {classify_regime(stress_score)}")
 
-    # TODO Phase 3: Re-enable classifier with weighted composite score
+    # TODO Phase 4: Backtest against 5 years of FRED history
 
 if __name__ == "__main__":
     main()
