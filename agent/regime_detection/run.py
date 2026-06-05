@@ -7,6 +7,39 @@ from fred_client import fetch_all
 
 DAYS=252
 
+WEIGHTS = {
+    "DGS10":    0.25,   # rate stress cluster
+    "T10Y2Y":   0.25,   # rate stress cluster — inverse sign
+    "FEDFUNDS": 0.15,   # rate stress cluster — least independent
+    "VIXCLS":   0.35,   # genuinely independent — deserves more weight
+}
+
+def classify_regime(stress_score):
+
+    if stress_score > 2.0: return "CRISIS"
+    if stress_score > 0.5: return "RISK_OFF"
+    if stress_score > -0.5: return "NEUTRAL"
+    return "RISK_ON"
+
+def compute_stress_score(signals, weights):
+    """
+     Positive score = stress elevated = risk-off
+     Sign convention:
+      DGS10   high z = stress up   (+)
+      T10Y2Y  low z  = stress up   (-) inverted
+      FEDFUNDS high z = stress up  (+) but less weight, less independent
+      VIXCLS  high z = stress up   (+)
+    """
+
+    score = (
+        weights["DGS10"]  * signals["DGS10"]["zscore"] +
+        weights["T10Y2Y"] * -signals["T10Y2Y"]["zscore"] +
+        weights["FEDFUNDS"] * signals["FEDFUNDS"]["zscore"] +
+        weights["VIXCLS"] * signals["VIXCLS"]["zscore"] 
+ )
+
+
+    return round(score,4)
 
 
 def compute_correlations(data, signals):
@@ -58,6 +91,9 @@ def main():
         "VIXCLS": compute_signal(data, "VIXCLS", "VIX"),
    }
     corr = compute_correlations(data, signals) 
+    stress_score = compute_stress_score(signals, WEIGHTS)
+    print(f"\nStress Score: {stress_score:+.4f}")
+    print(f"Regime: {classify_regime(stress_score)}")
 
     # TODO Phase 3: Re-enable classifier with weighted composite score
 
