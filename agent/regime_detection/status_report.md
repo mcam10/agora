@@ -141,6 +141,38 @@ When we run the backtest, we expect:
 
 ---
 
+## Next Steps — Freeze v0 Baseline, Then Let the Math Land
+
+The backtest is not the finish line — it's the control arm. The hand-tuned WEIGHTS dict and static boundaries are v0. Everything below makes v0 trustworthy, then builds the principled version to A/B against it.
+
+### Step 1: Correctness fixes before freezing baseline
+- [ ] **Swap FEDFUNDS → DFF (daily effective fed funds rate).** FEDFUNDS is monthly — only ~12 data points per year. During policy holds the z-score is exactly 0.0 (no variance). DFF gives you 252 daily observations of the same economic signal, so the z-score actually responds to market-implied rate expectations between meetings.
+- [ ] **Bump OBSERVATION_START_DAYS to ~2900.** Current value (1826) puts your earliest classified date around Oct 2021 after the 252-day lookback consumes the front. COVID crash (March 2020) — your strongest CRISIS validation — falls outside the window. Need ~2900 days to classify from early 2019 onward.
+- [ ] **Sanity check: does CRISIS fire on March 2020? Does RISK_OFF fire on 2022 rate hikes?** If not, the baseline is broken before you freeze it.
+- [ ] **Generate the README chart** (stress score time series with regime color bands). This is your portfolio artifact AND your v0 visualization.
+- [ ] **Do NOT hand-fit boundaries.** Confirm COVID=CRISIS and 2022=RISK_OFF, then stop. The boundaries get replaced by HMM in Phase 3 of EPAT anyway.
+
+### Step 2: PCA weights (EPAT Phase 1 deliverable)
+- [ ] Build the covariance matrix from aligned daily series (DFF must be in first)
+- [ ] Compute eigenvectors — the first principal component IS your "stress direction"
+- [ ] Derive weights from PC1 loadings (these replace the hand-tuned WEIGHTS dict)
+- [ ] Re-run backtest with PCA weights → first principled-vs-heuristic comparison
+- [ ] This is the same object as "inverse-covariance weights" on your long-term list
+
+### Step 3: Signal validation (EPAT Phase 2 deliverable)
+- [ ] Backtest each signal individually — does it have standalone predictive power?
+- [ ] FEDFUNDS/DFF during holds: is it adding signal or just noise?
+- [ ] Consider dropping or down-weighting signals that don't earn their place
+- [ ] This is where you decide the final signal set before HMM ingests it
+
+### Step 4: HMM regime boundaries (EPAT Phase 3 deliverable)
+- [ ] Replace static thresholds with Hidden Markov Model (`hmmlearn`)
+- [ ] The model learns regime boundaries from the data rather than hand-picking +0.5/+2.0
+- [ ] Train on the first 3 years, validate on the last 2 (out-of-sample)
+- [ ] This is "the single highest-leverage upgrade to the whole stack" per your own notes
+
+---
+
 ## Architecture Notes
 
 ### Public (This Repo — Python)
