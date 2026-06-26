@@ -99,6 +99,46 @@ These boundaries will be validated against historical data in the backtesting ph
   - Iran war shock (Feb 2026) → should classify RISK_OFF / CRISIS
 - Measure: How early did the detector signal regime shifts?
 
+### What We Built
+Implemented `run_backtest()` in `agent/backtesting/backtest.py`. The approach:
+1. Fetch all 5 years of history in a single API call (1826 days)
+2. Slide a 252-day window across the full dataset, one trading day at a time
+3. At each step: compute z-score + percentile for each signal within that window, calculate weighted stress score, classify regime
+4. Output: a time series of `(date, stress_score, regime)` saved to CSV
+
+This gives us a day-by-day regime classification we can overlay against actual market events to validate the model.
+
+### Understanding What the Backtest Tells Us
+
+**What's actually happening here (plain English):**
+
+Think of the stress score like a thermometer for financial anxiety. Each day, we look back one year and ask: "Compared to the past year, how unusual are today's conditions?" We measure four things:
+
+- **Interest rates (DGS10)** — When the government borrows money for 10 years, what do they pay? Higher = economy under pressure, borrowing is expensive, companies invest less.
+- **Yield curve (T10Y2Y)** — Normally, lending money for 10 years pays more than 2 years (you want compensation for waiting). When this gap shrinks or inverts, it means investors are so worried about the near future that they're accepting lower long-term returns just for safety. Historically one of the best recession predictors.
+- **Fed Funds Rate** — The rate the Federal Reserve sets overnight. When it's high, the Fed is deliberately slowing the economy to fight inflation. Money is expensive everywhere.
+- **VIX** — The "fear gauge." Derived from options prices on the S&P 500. When traders are scared, they buy insurance (options), which drives VIX up. Above 30 = panic. Below 15 = complacency.
+
+**Why z-scores matter:** A VIX of 20 means nothing in isolation. But if VIX averaged 14 over the past year with a standard deviation of 2, then 20 is a z-score of +3 — three standard deviations above normal. That's a signal. The z-score tells you "how weird is this relative to recent history."
+
+**Why the rolling window matters:** The economy changes. A 4.5% interest rate would have been terrifying in 2021 (when rates were near zero) but unremarkable in 2007. By always comparing to the trailing year, the detector adapts — it measures *acceleration and deviation*, not absolute levels.
+
+**The regime classifications:**
+- **RISK_ON** (score ≤ -0.5): Conditions are unusually calm. Rates stable or falling, curve steep, VIX low. Good environment for growth stocks, crypto, venture bets.
+- **NEUTRAL** (-0.5 to +0.5): Nothing unusual. Business as usual.
+- **RISK_OFF** (+0.5 to +2.0): Stress is building. One or more signals flashing. Defensive posture — treasury bonds, cash, low-volatility assets.
+- **CRISIS** (> +2.0): Multiple signals at extremes simultaneously. Rare — maybe 5-10% of trading days over 5 years. Full defensive.
+
+### Validation Targets
+When we run the backtest, we expect:
+| Period | Expected Regime | Why |
+|--------|----------------|-----|
+| Mar 2020 | CRISIS | COVID crash — VIX hit 82, everything correlated to 1 |
+| Apr–Nov 2020 | RISK_ON → NEUTRAL | Recovery, Fed at 0%, massive stimulus |
+| 2022 | RISK_OFF | Fastest rate hikes in 40 years, curve inverting |
+| 2023–2024 | NEUTRAL | Markets stabilized, rates plateaued |
+| Feb 2026 | RISK_OFF | Iran war shock, curve flattening again |
+
 ---
 
 ## Architecture Notes
@@ -134,3 +174,5 @@ These boundaries will be validated against historical data in the backtesting ph
 **2026-05-29** — First session. Built FRED data pipeline, implemented percentile scoring for DGS10 and T10Y2Y, identified 90-day window limitation, documented signal findings. Commented out classifier pending percentile-first rebuild. Identified open source / private split strategy.
 
 **2026-06-05** — Cleanup session. Removed verbose inline comments and dead code from `run.py`. Stripped unused imports (`json`, `sys`, `fetch_series`, `classify_regime`, `on_chain`). Removed commented-out DGS10 histogram plot and the entire commented-out classifier/on-chain block. Added concise section markers and TODO breadcrumbs for Phase 2/3 resumption. Created `status_report.md` to document project progression outside of code comments.
+
+**2026-06-26** — Backtesting session. Wired up `run_backtest()` in `agent/backtesting/backtest.py` with rolling 252-day window across 5 years of FRED data. Fixed window slicing bug (start/end were both set to same date). Outputs CSV with daily regime classifications. Next: run the backtest, validate against known market events, tune boundaries if needed.

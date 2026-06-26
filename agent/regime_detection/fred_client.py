@@ -16,20 +16,25 @@ SERIES = {
 }
 
 
-def fetch_series(series_id: str, lookback_days: int = 90) -> pd.DataFrame:
+def fetch_series(series_id: str, observation_start: int = 0, lookback_days: int = 90) -> pd.DataFrame:
     api_key = os.getenv("FRED_API_KEY")
     if not api_key:
         raise ValueError("FRED_API_KEY not set in environment")
+
+
+    start_past_observation = datetime.today() - timedelta(days=observation_start)
 
     params = {
         "series_id": series_id,
         "api_key": api_key,
         "file_type": "json",
-        "sort_order": "desc",
         "limit": lookback_days,
         "observation_start": (
-            datetime.today() - timedelta(days=lookback_days)
-        ).strftime("%Y-%m-%d"),
+            start_past_observation - timedelta(days=lookback_days)
+         ).strftime("%Y-%m-%d"),
+        "observation_end": (
+            start_past_observation
+         ).strftime("%Y-%m-%d"),
     }
 
     resp = requests.get(FRED_BASE_URL, params=params, timeout=10)
@@ -45,5 +50,7 @@ def fetch_series(series_id: str, lookback_days: int = 90) -> pd.DataFrame:
     return df[["date", "value"]]
 
 
-def fetch_all(lookback_days: int = 90) -> dict[str, pd.DataFrame]:
-    return {sid: fetch_series(sid, lookback_days) for sid in SERIES}
+#ten_yr_yield_5yr = fetch_series("DGS10", observation_start=1826, lookback_days=252)
+
+def fetch_all(observation_start,lookback_days: int = 90) -> dict[str, pd.DataFrame]:
+    return {sid: fetch_series(sid, observation_start, lookback_days) for sid in SERIES}

@@ -5,7 +5,8 @@ import pandas as pd
 
 from fred_client import fetch_all
 
-DAYS=252
+LOOKBACK_DAYS=252
+OBSERVATION_START_DAYS=1826
 
 WEIGHTS = {
     "DGS10":    0.25,   # rate stress cluster
@@ -37,7 +38,6 @@ def compute_stress_score(signals, weights):
         weights["FEDFUNDS"] * signals["FEDFUNDS"]["zscore"] +
         weights["VIXCLS"] * signals["VIXCLS"]["zscore"] 
  )
-
 
     return round(score,4)
 
@@ -82,7 +82,7 @@ def compute_signal(data, key, label):
 
 def main():
     print("Fetching FRED macro data (DGS10, T10Y2Y, FEDFUNDS, VIXCLS)...")
-    data = fetch_all(lookback_days=DAYS)
+    data = fetch_all(observation_start=0,lookback_days=LOOKBACK_DAYS)
 
     signals = {
         "DGS10": compute_signal(data, "DGS10", "DGS10 (10Y Yield)"),
@@ -95,7 +95,18 @@ def main():
     print(f"\nStress Score: {stress_score:+.4f}")
     print(f"Regime: {classify_regime(stress_score)}")
 
-    # TODO Phase 4: Backtest against 5 years of FRED history
-    # Adding this to my backtesting dir -> backtest.py
+    five_year_data = fetch_all(observation_start=OBSERVATION_START_DAYS,lookback_days=LOOKBACK_DAYS)
+
+    signals = {
+         "DGS10": compute_signal(five_year_data, "DGS10", "DGS10 (10Y Yield)"),
+         "T10Y2Y": compute_signal(five_year_data, "T10Y2Y", "T10Y2Y (Yield Curve)"),
+         "FEDFUNDS": compute_signal(five_year_data, "FEDFUNDS", "Fed Funds Rate"),
+         "VIXCLS": compute_signal(five_year_data, "VIXCLS", "VIX"),
+    }
+    corr = compute_correlations(five_year_data, signals) 
+    stress_score = compute_stress_score(signals, WEIGHTS)
+    print(f"\nStress Score: {stress_score:+.4f}")
+    print(f"Regime: {classify_regime(stress_score)}")
+   
 if __name__ == "__main__":
     main()
